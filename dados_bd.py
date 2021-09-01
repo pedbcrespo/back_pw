@@ -1,6 +1,6 @@
-# mysql://b7bff7d15f2ca7:561d309b@us-cdbr-east-04.cleardb.com/heroku_adbe231665a19ea?reconnect=true
-
-usuario = 'b7bff7d15f2ca7'
-senha = '561d309b'
+usuario = 'b89965cefeafd1'
+senha = '11e7ab27'
 host = 'us-cdbr-east-04.cleardb.com'
-bancoDados = 'heroku_adbe231665a19ea'
+bancoDados = 'heroku_68ed5cdce1bd9cf'
+
+# mysql://b89965cefeafd1:11e7ab27@us-cdbr-east-04.cleardb.com/heroku_68ed5cdce1bd9cf?reconnect=true
