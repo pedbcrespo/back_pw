@@ -147,7 +147,7 @@ class ProdutoController:
     def buscar(self, id_produto):
         prod = Produto.query.filter_by(id=id_produto).first()
         prod_dic = prod.dic()
-        prod_dic['imagem'] = self.download_imagem(prod_dic['id'])
+        prod_dic['imagem'] = self.download_imagem(prod_dic['id'])['imagem']
         return prod_dic()
 
     def download_imagem(self, id_produto):
