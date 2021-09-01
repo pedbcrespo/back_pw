@@ -138,12 +138,17 @@ class ProdutoController:
         return {"id":id_produto}
 
     def buscar_todos(self):
-        lista_produtos = Produto.query.all()  
-        return [produto.dic() for produto in lista_produtos]
+        lista_produtos = Produto.query.all()
+        lista_produtos_dic = [produto.dic() for produto in lista_produtos]
+        for produto in lista_produtos_dic:
+            produto['imagem'] = self.download_imagem(produto['id'])
+        return lista_produtos_dic
 
     def buscar(self, id_produto):
         prod = Produto.query.filter_by(id=id_produto).first()
-        return prod.dic()
+        prod_dic = prod.dic()
+        prod_dic['imagem'] = self.download_imagem(prod_dic['id'])
+        return prod_dic()
 
     def download_imagem(self, id_produto):
         produto = Produto.query.get(id_produto)
