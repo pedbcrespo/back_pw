@@ -147,7 +147,7 @@ class ProdutoController:
     def buscar(self, id_produto):
         prod = Produto.query.filter_by(id=id_produto).first()
         prod_dic = prod.dic()
-        prod_dic['imagem'] = self.download_imagem(prod_dic['id'])['imagem']
+        prod_dic['imagem'] = self.download_imagem(prod_dic['id'])
         return prod_dic()
 
     def download_imagem(self, id_produto):
@@ -156,7 +156,8 @@ class ProdutoController:
         tipo = tipo_imagem.tipo_imagem
         imagem = base64.b64encode(produto.caminhoImagem).decode('utf-8')
         imagem_json = f"data:image/{tipo};base64,{imagem}"
-        return {"imagem": imagem_json}
+        # return {"imagem": imagem_json}
+        return imagem_json
 
     def upload_imagem(self, id, imagem):
         dado_imagem = imagem.split(',')[1]
