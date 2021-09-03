@@ -1,6 +1,9 @@
 from models import Cliente, Info_cliente, Produto, Categoria, Carrinho, Estoque, Tipo_imagem_produto
-from config import db
+from config import db, mail
+from flask_mail import Message
 import base64
+
+
 
 
 class ClienteController:
@@ -58,15 +61,39 @@ class CarrinhoController:
 
     def finalizar_compra(self, id_cliente):
         compra_atual = Carrinho.query.filter_by(idCliente=id_cliente).all()
-        
+
+        info_cliente = Info_cliente.query.filter_by(cliente_id=id_cliente).first()
+        lista_produto = []
+
         def atualiza_estoque(id_produto):
             produto_estoque = Estoque.query.filter_by(id=id_produto).first()
             produto_estoque.quantidade -= 1
             db.session.commit()
             return True
 
+        def enviar_email(email_cliente, carrinho):
+            
+            lst_produtos = []
+            for produto in carrinho:
+                lst_produtos.append(f"{produto.nome}: R$ {produto.preco}")
+
+            lst = "\n".join(lst_produtos)
+            msg = Message(
+                f"Simulação de compra Efetuada\n{lst}",
+                sender='projprogweb@gmail.com',
+                recipients=[email_cliente]
+            )
+
+            mail.send(msg)
+
         for compra in compra_atual:
+            produto = Produto.query.get(compra.idProduto)
+            preco = round(produto.preco)
+            lista_produto.append(f"{produto.nome}: R$ {preco}")
             atualiza_estoque(compra.idProduto)
+
+        # Caso de algum erro, comentar a funcao abaixo
+        enviar_email(info_cliente.email, lista_produto)
 
         return {"status": "compra finalizada"}
 
