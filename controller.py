@@ -4,8 +4,6 @@ from flask_mail import Message
 import base64
 
 
-
-
 class ClienteController:
     def adicionar(self, id):
         db.session.add(Cliente(id))
@@ -79,9 +77,10 @@ class CarrinhoController:
 
             lst = "\n".join(lst_produtos)
             msg = Message(
-                f"Simulação de compra Efetuada\n{lst}",
+                "Simulação de compra Efetuada",
                 sender='projprogweb@gmail.com',
-                recipients=[email_cliente]
+                recipients=[email_cliente],
+                body=lst
             )
 
             mail.send(msg)
@@ -252,4 +251,4 @@ if __name__ == '__main__':
     p = ProdutoController()
     c = CarrinhoController()
     v = ClienteController()
-    # print(c.buscar_todos())
+    # print(c.buscar_todos()
