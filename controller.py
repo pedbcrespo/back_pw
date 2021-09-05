@@ -56,7 +56,6 @@ class CarrinhoController:
             self.adicionar_produto(id_cliente, int(produto_id))
         return {"idCliente": id_cliente, "lista":lista_produtos}
 
-
     def finalizar_compra(self, id_cliente):
         compra_atual = Carrinho.query.filter_by(idCliente=id_cliente).all()
 
@@ -92,8 +91,11 @@ class CarrinhoController:
             atualiza_estoque(compra.idProduto)
 
         # Caso de algum erro, comentar a funcao abaixo
-        enviar_email(info_cliente.email, lista_produto)
-
+        try:
+            enviar_email(info_cliente.email, lista_produto)
+        except:
+            print("Nao foi possivel enviar o email de confirmacao")
+            
         return {"status": "compra finalizada"}
 
     def remover_produto(self, id_cliente, id_produto, indice):
@@ -165,9 +167,16 @@ class ProdutoController:
 
     def buscar_todos(self):
         lista_produtos = Produto.query.all()
-        lista_produtos_dic = [produto.dic() for produto in lista_produtos]
+        # lista_produtos_dic = [produto.dic() for produto in lista_produtos]
+        lista_produtos_dic = []
+
+        for produto in lista_produtos:
+            if self.verificar_estoque(produto.id):
+                lista_produtos_dic.append(produto.dic())
+
         for produto in lista_produtos_dic:
             produto['imagem'] = self.download_imagem(produto['id'])
+            
         return lista_produtos_dic
 
     def buscar(self, id_produto):
@@ -205,26 +214,9 @@ class ProdutoController:
         estoque = Estoque.query.all()
         return [dado.dic() for dado in estoque]
 
-    # Esse metodo nao salva a imagem no BD, mas sim num arquivo no servidor
-    def salva_imagem(self, arquivo, id_produto):
-        cpy_arq = ''
-        with open(arquivo, 'r+b') as arquivo_img:
-            cpy_arq = arquivo_img.read()
-        
-        with open(f"./imgs/produto{id_produto}.jpg", 'w+b') as arquivo_slv:
-            arquivo_slv.write(cpy_arq)
-        
-        return {"id": id_produto}
-
-    # Esse metodo busca a imagem numa pasta no servidor
-    def buscar_imagem(self, id_produto):
-        arquivo_servidor = f"./imgs/produto{id_produto}.jpg"
-        arquivo = ''
-        with open(arquivo_servidor, 'r+b') as arqbin:
-            arquivo = arqbin.read()
-        imagem = base64.b64encode(arquivo).decode('utf-8')
-        return {"imagem": f"data:image/jpg;base64,{imagem}"}
-
+    def verificar_estoque(self, id_produto):
+        estoque = Estoque.query.get(id_produto)
+        return estoque.quantidade > 0 
 
 class CategoriaController:
     def adicionar(self, nome):
